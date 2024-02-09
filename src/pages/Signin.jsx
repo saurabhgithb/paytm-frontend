@@ -41,8 +41,9 @@ const Signin = () => {
       }
     );
 
-    if (response.statusText !== "OK") {
-      alert("Unable to login");
+    alert(response.data.message);
+    if (!response.data.token) {
+      consol.log;
       return;
     }
 

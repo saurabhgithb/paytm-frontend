@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Heading } from "./Heading";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { InputBox } from "./InputBox";
@@ -6,17 +6,34 @@ import { Button } from "./Button";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 
-export const SendMoney = ({ to }) => {
+export const SendMoney = () => {
   const [amount, setAmount] = useState(0);
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const firstName = searchParams.get("name");
+  const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_API}/api/v1/account/balance`, {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
+        setBalance(res.data.balance);
+      });
+  }, []);
 
   async function handleSendMoney(e) {
     e.preventDefault();
 
     if (amount <= 0) {
       alert("Can't send this much");
+      return;
+    }
+    if (amount > balance) {
+      alert("Insufficient Balance");
       return;
     }
     const response = await axios.post(

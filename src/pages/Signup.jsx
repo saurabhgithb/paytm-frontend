@@ -46,6 +46,9 @@ const Signup = () => {
       }
     );
     alert(response.data.message);
+    if (!response.data.token) {
+      return;
+    }
     localStorage.setItem("token", response.data.token);
     axios
       .get(`${import.meta.env.VITE_API}/api/v1/me`, {
